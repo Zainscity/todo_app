@@ -14,7 +14,7 @@ const Chatbot = () => {
         setInput('');
 
         // Send message to backend
-        const response = await fetch('http://localhost:8000/api/chatbot', {
+        const response = await fetch('https://todo-app-backend-six-mauve.vercel.app/api/chatbot', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
