@@ -1,0 +1,104 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.env
+.env.local
+.env.backup
+.env.dev
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging.local
+.envrc
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+coverage/
+*.lcov
+.nyc_output/
+lib-cov/
+*.tsbuildinfo
+
+# Builds
+dist/
+.next/
+out/
+
+# Backend specific
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/.env
+backend/*.log
+
+# Frontend specific
+frontend/node_modules/
+frontend/build/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker
+.dockerignore
+.docker/
+*.docker
+docker-compose*.yml.swp
+
+# Database
+*.db
+*.db-journal
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Unit test / coverage reports
+*.gcda
+*.gcno
+
+# Temporary folders
+tmp/
+temp/

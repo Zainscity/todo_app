@@ -1,0 +1,313 @@
+openapi: 3.0.3
+info:
+  title: Todo Application API
+  description: API for the Todo Full-Stack Web Application with multi-user support
+  version: 1.0.0
+paths:
+  /api/{user_id}/tasks:
+    get:
+      summary: Get all tasks for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The user's ID
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          description: Number of tasks to return
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Number of tasks to skip
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, completed, pending]
+            default: all
+          description: Filter by completion status
+      responses:
+        '200':
+          description: List of tasks for the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '401':
+          description: Unauthorized - Invalid or missing authentication
+        '403':
+          description: Forbidden - User attempting to access another user's tasks
+        '404':
+          description: Not Found - User ID does not exist
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a new task for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The user's ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: Task successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad Request - Invalid request body or missing required fields
+        '401':
+          description: Unauthorized - Invalid or missing authentication
+        '403':
+          description: Forbidden - User attempting to create task for another user
+        '404':
+          description: Not Found - User ID does not exist
+      security:
+        - bearerAuth: []
+  /api/{user_id}/tasks/{id}:
+    get:
+      summary: Get a specific task for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The user's ID
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The task's ID
+      responses:
+        '200':
+          description: Task found and returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          description: Unauthorized - Invalid or missing authentication
+        '403':
+          description: Forbidden - User attempting to access another user's task
+        '404':
+          description: Not Found - Task or user ID does not exist
+      security:
+        - bearerAuth: []
+    put:
+      summary: Update an existing task for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The user's ID
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The task's ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: Task successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad Request - Invalid request body or missing required fields
+        '401':
+          description: Unauthorized - Invalid or missing authentication
+        '403':
+          description: Forbidden - User attempting to update another user's task
+        '404':
+          description: Not Found - Task or user ID does not exist
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Delete a specific task for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The user's ID
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The task's ID
+      responses:
+        '204':
+          description: Task successfully deleted
+        '401':
+          description: Unauthorized - Invalid or missing authentication
+        '403':
+          description: Forbidden - User attempting to delete another user's task
+        '404':
+          description: Not Found - Task or user ID does not exist
+      security:
+        - bearerAuth: []
+  /api/{user_id}/tasks/{id}/complete:
+    patch:
+      summary: Toggle the completion status of a task for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The user's ID
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The task's ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskCompletionRequest'
+      responses:
+        '200':
+          description: Task completion status successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad Request - Invalid request body or missing completed field
+        '401':
+          description: Unauthorized - Invalid or missing authentication
+        '403':
+          description: Forbidden - User attempting to update another user's task
+        '404':
+          description: Not Found - Task or user ID does not exist
+      security:
+        - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Task:
+      type: object
+      required:
+        - id
+        - user_id
+        - title
+        - completed
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the task
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user who owns the task
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Task title
+        description:
+          type: string
+          maxLength: 500
+          description: Optional task description
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        created_at:
+          type: string
+          format: date-time
+          description: Task creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Task last update timestamp
+    CreateTaskRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Task title (required)
+        description:
+          type: string
+          maxLength: 500
+          description: Optional task description
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Updated task title
+        description:
+          type: string
+          maxLength: 500
+          description: Updated task description
+    UpdateTaskCompletionRequest:
+      type: object
+      required:
+        - completed
+      properties:
+        completed:
+          type: boolean
+          description: New completion status for the task
